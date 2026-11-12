@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#101827">
+  <meta name="description" content="ব্যক্তিগত বাইক Fuel Cycle ও Ride Sharing Income Tracker">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <title>My Bike Tracker</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">🏍</div>
+        <div><h1>My Bike Tracker</h1><p>Fuel Cycle & Income Manager</p></div>
+      </div>
+      <button class="icon-btn" id="themeBtn" aria-label="থিম পরিবর্তন">☼</button>
+    </header>
+
+    <main>
+      <section class="welcome-row">
+        <div><p class="eyebrow">আপনার বাইকের হিসাব</p><h2>আজকের অবস্থা</h2></div>
+        <div class="date-chip" id="todayLabel"></div>
+      </section>
+
+      <section class="hero-card">
+        <div class="hero-top">
+          <div><span class="muted-light">চলমান Fuel Cycle</span><h3 id="cycleName">কোনো Active Cycle নেই</h3></div>
+          <span class="status" id="cycleStatus">শুরু হয়নি</span>
+        </div>
+        <div class="hero-value">
+          <span>তেল খরচ বাদে অবশিষ্ট আয়</span>
+          <strong id="cycleNet">৳০</strong>
+        </div>
+        <div class="hero-stats">
+          <div><small>এই Cycle-এর ইনকাম</small><b id="cycleIncome">৳০</b></div>
+          <div><small>তেল ভরার খরচ</small><b id="cycleFuel">৳০</b></div>
+          <div><small>Cycle শুরু</small><b id="cycleStart">—</b></div>
+        </div>
+        <div class="progress-track"><div id="incomeProgress"></div></div>
+        <p class="hero-foot" id="cycleHint">প্রথমে তেল ভরে একটি নতুন Fuel Cycle শুরু করুন।</p>
+      </section>
+
+      <section class="metric-grid">
+        <article class="metric-card"><div class="metric-icon green">↗</div><small>এই মাসের ইনকাম</small><strong id="monthIncome">৳০</strong><span class="metric-note">সব Cycle মিলিয়ে</span></article>
+        <article class="metric-card"><div class="metric-icon orange">⛽</div><small>এই মাসের তেল খরচ</small><strong id="monthFuel">৳০</strong><span class="metric-note">সব Fuel Purchase</span></article>
+        <article class="metric-card"><div class="metric-icon blue">▤</div><small>মোট Fuel Cycle</small><strong id="totalCycles">০</strong><span class="metric-note">চলমান ও সম্পন্ন</span></article>
+        <article class="metric-card"><div class="metric-icon purple">৳</div><small>এই মাসের অবশিষ্ট আয়*</small><strong id="monthNet">৳০</strong><span class="metric-note">ইনকাম − তেল কেনা</span></article>
+      </section>
+
+      <section class="quick-actions">
+        <button class="action primary" id="addIncomeBtn"><span>＋</span><div><b>ইনকাম যোগ করুন</b><small>আজকের বা আগের দিনের আয়</small></div></button>
+        <button class="action secondary" id="newFuelBtn"><span>⛽</span><div><b>নতুন তেল ভরুন</b><small>নতুন Fuel Cycle শুরু</small></div></button>
+      </section>
+
+      <section class="panel">
+        <div class="section-heading"><div><p class="eyebrow">ACTIVITY</p><h3>সাম্প্রতিক ইনকাম</h3></div><button class="text-btn" data-page="history">সব দেখুন →</button></div>
+        <div id="recentIncome" class="transaction-list"><div class="empty">এখনো কোনো ইনকাম এন্ট্রি নেই।</div></div>
+      </section>
+
+      <section class="notice">* “অবশিষ্ট আয়” বলতে সংশ্লিষ্ট সময়ের মোট ইনকাম থেকে ওই সময়ের Fuel Purchase বাদ দেওয়া হয়েছে। এটি ব্যক্তিগত ব্যবহারের জ্বালানি বা অন্যান্য খরচ বাদ দেওয়া প্রকৃত লাভ নয়।</section>
+    </main>
+
+    <nav class="bottom-nav">
+      <button class="nav-item active" data-page="home"><span>⌂</span><small>হোম</small></button>
+      <button class="nav-item" data-page="cycles"><span>⛽</span><small>Fuel Cycle</small></button>
+      <button class="nav-item" data-page="history"><span>↕</span><small>ইতিহাস</small></button>
+      <button class="nav-item" data-page="reports"><span>▥</span><small>রিপোর্ট</small></button>
+      <button class="nav-item" data-page="settings"><span>⚙</span><small>সেটিংস</small></button>
+    </nav>
+  </div>
+
+  <!-- Pages -->
+  <section class="page-view hidden" id="page-cycles">
+    <header class="page-header"><button class="back-btn" data-page="home">←</button><div><p class="eyebrow">FUEL MANAGEMENT</p><h2>Fuel Cycle History</h2></div></header>
+    <div class="page-content"><div id="cycleList" class="stack-list"></div></div>
+  </section>
+  <section class="page-view hidden" id="page-history">
+    <header class="page-header"><button class="back-btn" data-page="home">←</button><div><p class="eyebrow">TRANSACTIONS</p><h2>ইনকাম ইতিহাস</h2></div></header>
+    <div class="page-content">
+      <div class="filter-row"><input id="historySearch" type="search" placeholder="তারিখ বা বিবরণ খুঁজুন"><select id="historyFilter"><option value="all">সব Cycle</option></select></div>
+      <div id="historyList" class="stack-list"></div>
+    </div>
+  </section>
+  <section class="page-view hidden" id="page-reports">
+    <header class="page-header"><button class="back-btn" data-page="home">←</button><div><p class="eyebrow">ANALYTICS</p><h2>রিপোর্ট ও বিশ্লেষণ</h2></div></header>
+    <div class="page-content">
+      <div class="report-summary" id="reportSummary"></div>
+      <div class="panel chart-panel"><div class="section-heading"><div><p class="eyebrow">CYCLE COMPARISON</p><h3>Cycle অনুযায়ী ইনকাম</h3></div></div><div id="cycleChart" class="bar-chart"></div></div>
+      <div class="panel"><div class="section-heading"><h3>মাসভিত্তিক হিসাব</h3></div><div id="monthlyRows"></div></div>
+    </div>
+  </section>
+  <section class="page-view hidden" id="page-settings">
+    <header class="page-header"><button class="back-btn" data-page="home">←</button><div><p class="eyebrow">PREFERENCES</p><h2>সেটিংস ও ডাটা</h2></div></header>
+    <div class="page-content">
+      <div class="panel settings-panel">
+        <h3>ডাটা সুরক্ষা</h3>
+        <p class="muted">আপনার ডাটা এই ডিভাইসের ব্রাউজারে সংরক্ষিত থাকে। নিয়মিত Backup রাখুন।</p>
+        <button class="wide-btn" id="backupBtn">↓ JSON Backup ডাউনলোড</button>
+        <label class="wide-btn file-label">↑ Backup Restore <input type="file" id="restoreInput" accept=".json,application/json"></label>
+        <button class="wide-btn" id="csvBtn">▦ CSV Export</button>
+      </div>
+      <div class="panel settings-panel">
+        <h3>অ্যাপ সম্পর্কে</h3><p>My Bike Tracker · Version 1.0</p><p class="muted">Offline-ready personal fuel cycle tracker.</p>
+        <button class="wide-btn danger-outline" id="resetBtn">সব ডাটা মুছে ফেলুন</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modal -->
+  <div class="modal-backdrop hidden" id="modalBackdrop">
+    <div class="modal">
+      <div class="modal-head"><div><p class="eyebrow" id="modalEyebrow">NEW ENTRY</p><h3 id="modalTitle">ইনকাম যোগ করুন</h3></div><button class="close-btn" id="closeModal">×</button></div>
+      <form id="entryForm">
+        <div id="formFields"></div>
+        <div class="modal-actions"><button type="button" class="cancel-btn" id="cancelModal">বাতিল</button><button type="submit" class="submit-btn" id="submitEntry">সংরক্ষণ করুন</button></div>
+      </form>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
+  <script src="app.js"></script>
+</body>
+</html>
